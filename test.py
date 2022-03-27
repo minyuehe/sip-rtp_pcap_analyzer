@@ -1,4 +1,5 @@
 import scapy.all as scapy
+import re
 
 
 data = scapy.rdpcap('./data/sip会话.pcap')
@@ -11,8 +12,11 @@ print(data[10].payload.src)
 print(data[10].payload.time)
 
 # ['Raw']层
-a = data[10]['Raw']
+a = data[0]['Raw']
 # print(a.load.decode('UTF-8'))
-aList = a.load.decode('unicode_escape', errors='ignore').split('\r\n')
+# 解码后
+aString = a.load.decode('utf-8')
+aList = re.split('[\r\n|;]', aString) #'\r\n' or 
 # 0: 包信息  1: via 2: from 3: to
-print(aList)
+print(aList[0])
+print(aList[7])

@@ -4,4 +4,5 @@ from utils.getMsg import *
 
 if __name__=="__main__":
   list = getDataList()
-  print(list)
+  for item in list:
+    print('~~~', item.type, '&&&', item.content) # item.time
