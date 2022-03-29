@@ -1,16 +1,17 @@
 import scapy.all as scapy
 import copy
 import re
+import datetime
 
 class Message:
-    def __init__(self, src, sport, dst, dport, time, content, type):
-        self.src = src
-        self.sport = sport
-        self.dst = dst
-        self.dport = dport
-        self.time = time
-        self.content = content
-        self.type = type
+  def __init__(self, src, sport, dst, dport, time, content, type):
+    self.src = src
+    self.sport = sport
+    self.dst = dst
+    self.dport = dport
+    self.time = time
+    self.content = content
+    self.type = type
 
 data = scapy.rdpcap('./data/sip会话.pcap')
   
@@ -19,15 +20,14 @@ def initData(packet):
   dport = packet.payload.dport
   sport = packet.payload.sport
   src = packet.payload.src
-  # TODO this time isn't the true time.
-  time = packet.payload.time
+  time = datetime.datetime.fromtimestamp(float(packet.time)).strftime("%H:%M:%S.%f")
   # how to judge sip-packet or rtp-packet? 
   # just use this charc of rtp-load message which will throw UnicodeDecodeError when we use 'utf-8' as the decode method.
-  try: 
+  try:
     # TODO: there is a bug in first-bye-packet.
     aString = packet['Raw'].load.decode('utf-8')
     aList = re.split('[\r\n|;]', aString)
-    content = aList #aList[0] + aList[7]
+    content = aList[0] + aList[7]
     type = 'SIP'
   except UnicodeDecodeError:
     content = 'RTP'
