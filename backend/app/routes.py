@@ -1,12 +1,13 @@
-from flask import render_template
-from flask import request
+from flask import render_template, request, jsonify
 from app import app
+from app.utils.getMsg import *
+import json
 
 
 # 真正调用词云库生成图片
-def get_list(text):
-    print(text)
-    return text
+# def get_list():
+#     list = getDataList()
+#     return jsonify(list)
 
 
 # 主页面
@@ -20,5 +21,5 @@ def index():
 @app.route('/pcap/analysis', methods=["POST"])
 def cloud():
     text = request.json.get("word")
-    res = get_list(text)
+    res = getDataList()
     return res
