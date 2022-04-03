@@ -3,6 +3,7 @@ import copy
 import re
 import datetime
 import json
+import glob
 
 class Message:
   def __init__(self, src, sport, dst, dport, time, content, type):
@@ -13,8 +14,6 @@ class Message:
     self.time = time
     self.content = content
     self.type = type
-
-data = scapy.rdpcap('app/data/sip会话.pcap')
   
 def initData(packet):
   dst = packet.payload.dst
@@ -37,6 +36,14 @@ def initData(packet):
   return Message(src, sport, dst, dport, time, content, type)
 
 def getDataList():
+  filePathList = glob.glob(r'app/download/*.pcap')
+  if(filePathList == []):
+    raise Exception("亲，您还没上传文件呢！")
+
+  # 目前只支持单一文件解析
+  filePath = filePathList[0]
+  print('filePath', filePath)
+  data = scapy.rdpcap(filePath)
   table = {}
   isRTP = False
   endRTP = {}
@@ -50,4 +57,4 @@ def getDataList():
       table[showData.time] = json.dumps(showData.__dict__)
     if(isRTP):
       endRTP = showData
-  return table
+  return [table, filePath]
