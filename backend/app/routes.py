@@ -5,13 +5,6 @@ from app.utils.uploadFile import *
 import json
 import os
 
-
-# 真正调用词云库生成图片
-# def get_list():
-#     list = getDataList()
-#     return jsonify(list)
-
-
 # 主页面
 @app.route('/')
 @app.route('/index')
@@ -22,7 +15,6 @@ def index():
 # pcap文件解析接口，以字典形式返回
 @app.route('/pcap/analysis', methods=["GET"])
 def analysis():
-    # TODO 判断是否存在文件
     try: 
         res = getDataList()
     except Exception as err:
@@ -42,3 +34,10 @@ def upload():
     resp_data = resp_file_upload(requ_data)
 
     return jsonify(resp_data)
+
+# test
+@app.route('/print', methods=["POST"])
+def printI():
+    data = request.data.decode('utf-8')
+    value = json.loads(data)['data']
+    return value

@@ -1,6 +1,5 @@
 import os
 
-
 def resp_file_upload(requ_data):
     # 保存文件
     file_content = requ_data['file']

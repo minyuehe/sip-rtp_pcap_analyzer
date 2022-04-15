@@ -46,14 +46,26 @@ def getDataList():
   data = scapy.rdpcap(filePath)
   table = {}
   isRTP = False
+  firstRTP = {}
   endRTP = {}
   for a in data:
     showData = initData(a)
     isRTP = showData.type == 'RTP'
     if((not isRTP) and endRTP):
+      if (firstRTP.src == endRTP.src):
+        temp = endRTP.src
+        endRTP.src = endRTP.dst
+        endRTP.dst = temp
+        tempPort = endRTP.sport
+        endRTP.sport = endRTP.dport
+        endRTP.dport = tempPort
+
       table[endRTP.time] = json.dumps(endRTP.__dict__)
       endRTP = {}
+      firstRTP = {}
     if(not (isRTP and endRTP)):
+      if (showData.type == 'RTP' and firstRTP == {}):
+        firstRTP = showData
       table[showData.time] = json.dumps(showData.__dict__)
     if(isRTP):
       endRTP = showData

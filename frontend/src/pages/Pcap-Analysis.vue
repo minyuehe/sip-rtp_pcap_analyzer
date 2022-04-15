@@ -27,11 +27,24 @@
           生成
         </el-button>
       </div>
+      <el-divider content-position="right">By minyue</el-divider>
+      <!-- <el-button type="primary" @click="dialogTableVisible = true">顺序图展示</el-button> -->
+      <el-dialog
+        title="顺序图"
+        width="70%"
+        center
+        :visible.sync="dialogTableVisible"
+      >
+        <div class="dialog">
+          <sequence-diagram :data-list="dataList" @line-click="showItemMsg"/>
+        </div>
+      </el-dialog>
       <div class="msg-table">
-        <el-table :data="dataTable">
-          <el-table-column prop="type" label="类型" width="50" />
-          <el-table-column prop="content" label="内容" width="600" />
-          <el-table-column prop="time" label="时间" />
+        <el-table :data="dataList">
+          <el-table-column prop="from" label="源地址" width="200" />
+          <el-table-column prop="to" label="目的地址" width="200" />
+          <el-table-column prop="note" label="内容" width="600" />
+          <el-table-column prop="label" label="时间" />
         </el-table>
       </div>
     </div>
@@ -40,33 +53,35 @@
 
 <script>
 import { Message } from 'element-ui'
+import SequenceDiagram from '@/components/SequenceDiagram.vue'
 export default {
   name: 'pcapanalysis',
   data () {
     return {
-      dataTable: [
-        {
-          type: '暂无数据',
-          content: '暂无数据',
-          time: Date.now()
-        }
-      ],
-      isUpload: false
+      isUpload: false,
+      dataList: [{
+        label: Date.now(),
+        from: 'null',
+        to: 'null',
+        note: '',
+        isDash: 0
+      }],
+      dialogTableVisible: false
     }
+  },
+  components: {
+    SequenceDiagram
   },
   methods: {
     onSubmit () {
       this.axios
         .get('http://127.0.0.1:5000/pcap/analysis')
         .then(res => {
-          console.log('res', res)
-          const arr = Object.values(res.data).reduce(
-            (pre, cur) => [...pre, JSON.parse(cur)],
-            []
-          )
+          console.log('res', res.data)
+          // debugger
+          this.initData(res.data)
 
-          this.dataTable = arr
-          console.log(arr)
+          this.dialogTableVisible = true
         })
         .catch(res => {
           const { data: msg } = res.response
@@ -89,25 +104,52 @@ export default {
     },
     beforeUpload (file) {
       console.log('beforeUpload', file)
+    },
+    initData (data) {
+      const arr = Object.values(data).reduce(
+        (pre, cur) => [...pre, doaa(JSON.parse(cur))],
+        []
+      )
+      function doaa (bobj) {
+        const {time, src, sport, dst, dport, content} = bobj
+
+        return {
+          label: time,
+          from: `${src}:${sport}`,
+          to: `${dst}:${dport}`,
+          note: content,
+          isDash: 0
+        }
+      }
+      arr[arr.length - 1].isDash = 1
+      arr[arr.length - 2].isDash = 1
+      this.dataList = arr
+      console.log(arr)
+    },
+    showItemMsg (index, data) {
+      console.log('data', data)
+      alert('当前节点信息' + data.note)
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
+@color: midnightblue;
 .text-area {
   margin-left: 20%;
   margin-right: 20%;
 }
-/* .upload-button {
-  padding: 20px;
+div {
+  color: @color;
 }
-.operation {
-  height: 100px;
-} */
 .msg-table {
   width: 800px;
   height: 300px;
   margin: 20px;
+}
+.dialog {
+  width: 100%;
+  height: 90vh;
 }
 </style>
