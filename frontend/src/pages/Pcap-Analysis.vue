@@ -7,9 +7,9 @@
         ref="upload"
         action="http://127.0.0.1:5000/pcap/upload"
         :on-success="handleFiles"
-        :before-upload="beforeUpload"
-        accept=".pcap"
+        auto-upload
         :limit="1"
+        accept=".pcap"
         :show-file-list="false"
       >
         <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
@@ -28,16 +28,24 @@
         </el-button>
       </div>
       <el-divider content-position="right">By minyue</el-divider>
-      <!-- <el-button type="primary" @click="dialogTableVisible = true">顺序图展示</el-button> -->
       <el-dialog
         title="顺序图"
         width="70%"
         center
         :visible.sync="dialogTableVisible"
+        :before-close="beforeCloseDialog"
       >
-        <div class="dialog">
-          <sequence-diagram :data-list="dataList" @line-click="showItemMsg"/>
-        </div>
+          <div class="dialog" id="pdfDom">
+            <sequence-diagram :data-list="dataList" @line-click="showItemMsg"/>
+          </div>
+          <el-dialog
+            width="30%"
+            title="亲，关闭页面需要重新上传解析哦！ 您可选择下载PDF～"
+            :visible.sync="innerVisible"
+            append-to-body>
+            <el-button type="primary" @click="getPdf('文件名')">导出(pdf)</el-button>
+            <el-button type="warning" @click="innerVisible = false; dialogTableVisible = false">关闭</el-button>
+          </el-dialog>
       </el-dialog>
       <div class="msg-table">
         <el-table :data="dataList">
@@ -66,7 +74,8 @@ export default {
         note: '',
         isDash: 0
       }],
-      dialogTableVisible: false
+      dialogTableVisible: false,
+      innerVisible: false
     }
   },
   components: {
@@ -101,9 +110,7 @@ export default {
         duration: 5 * 1000
       })
       this.isUpload = false
-    },
-    beforeUpload (file) {
-      console.log('beforeUpload', file)
+      this.$refs['upload'].clearFiles()
     },
     initData (data) {
       const arr = Object.values(data).reduce(
@@ -129,6 +136,9 @@ export default {
     showItemMsg (index, data) {
       console.log('data', data)
       alert('当前节点信息' + data.note)
+    },
+    beforeCloseDialog (done) {
+      this.innerVisible = true
     }
   }
 }
