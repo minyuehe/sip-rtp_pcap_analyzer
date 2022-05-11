@@ -1,52 +1,53 @@
-# flask-vue-word-cloud
+# Flask-vue-pcap-analysis
 A single page application with Flask and Vue.
 
 ### 前言
-这是一个前端用 Vue，后端用 Python 的 Web 框架 Flask 开发的词云生成应用。写这个小项目的起因是最近团队年终述职，有一些大佬的 PPT 上用了词云来展示自己团队一年的工作成果。还有大佬说不要守着自己的一亩三分地，在技术上拓宽视野可以帮助我们更好的成长。正好之前接触过 Python 和 R 生成词云，于是作为一个移动端开发者，想在本地跑一个生成词云的服务，就有了这个项目。
+这是一个前端用 Vue，后端用 Python 的 Web 框架 Flask 开发的sip/rtp协议数据包（pcap）解析工具。这个小项目作为自己毕业设计
+
+课题来完成。感兴趣可以clone下来自己玩哈～
 
 ### 目录结构
+
 先简单看一下项目的目录结构，backend 是 Flask 实现的服务端，frontend 是 Vue 实现的前端。
 
 ```
 .
-├── backend
-│   ├── app
-│   └── venv
-└── frontend
-    ├── README.md
-    ├── build
-    ├── config
-    ├── dist
-    ├── index.html
-    ├── node_modules
-    ├── package-lock.json
-    ├── package.json
-    ├── src
-    └── static
+├── ./README.md
+├── ./backend
+│   ├── ./backend/app
+│   └── ./backend/pcap-analysis.py
+└── ./frontend
+    ├── ./frontend/README.md
+    ├── ./frontend/build
+    ├── ./frontend/config
+    ├── ./frontend/dist
+    ├── ./frontend/index.html
+    ├── ./frontend/node_modules
+    ├── ./frontend/package-lock.json
+    ├── ./frontend/package.json
+    └── ./frontend/src
 ```
 > Vue 是渐进式 JavaScript 框架。[Vue官网](https://cn.vuejs.org/)
 
 > Flask 是一个使用 Python 编写的轻量级 Web 应用框架。[Flask 学习资源](https://dormousehole.readthedocs.io/en/latest/)
 
 再来看一下目前代码的运行效果：
-![image.png](https://i.loli.net/2020/01/17/9J3D5heMVWu6qTC.png)
+![image-20220418102030715](README/image-20220418102030715.png)
 
 ### 开发环境
 硬件：
-- macOS Mojave 10.14.6
+- macOS Monterey 12.2.1
 
 软件：
-- nodejs v11.6.0
-- Python 3.7.4
-
-请确保已经安装好了node js 环境，可参考[nodejs官网](https://nodejs.org/en/)进行安装。
+- nodejs v14.17.1
+- Python 3.8.2
 
 ### 前端开发
 
 #### 1、安装vue-cli
 
-安装 vue-cli</br>
 Vue CLI 是一个基于 Vue.js 进行快速开发的完整系统。
+
 ```
 $ npm install -g vue-cli
 ```
@@ -62,9 +63,6 @@ $ cd word-cloud/
 ```
 $ vue init webpack frontend
 ```
-执行完上面的命令后，会让你设置项目的基本信息，我的配置如下：
-![image.png](https://i.loli.net/2020/01/17/zoySbGNxAfXFQv2.png)
-
 然后等待安装一些基本的依赖，完成之后进入到 frontend 目录
 
 ```
@@ -362,14 +360,3 @@ def cloud():
 最后执行`flask run`就可以跑起来了。
 
 当然这是用半天时间跑起来的一个简陋的应用，但是具备了基本的前后端分离应用的功能，后续将会完善起来。
-
-### TODO
-- [ ] 支持中文分词
-- [ ] 支持停用词
-- [ ] 集成 Docker
-- [ ] 自定义背景颜色
-- [ ] 自定义图片尺寸
-- [ ] 自定义词云形状
-- [ ] 自定义字体
-- [ ] 服务器部署
-- [ ] 其他

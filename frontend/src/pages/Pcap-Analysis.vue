@@ -124,7 +124,7 @@ export default {
           label: time,
           from: `${src}:${sport}`,
           to: `${dst}:${dport}`,
-          note: content,
+          note: JSON.stringify(content),
           isDash: 0
         }
       }
