@@ -9,6 +9,11 @@ export default new Router({
       path: '/',
       name: 'index',
       component: () => import('@/pages/Pcap-Analysis')
+    },
+    {
+      path: '/black',
+      name: 'kongbaiye',
+      component: () => import('@/pages/kongbaiye')
     }
   ]
 })

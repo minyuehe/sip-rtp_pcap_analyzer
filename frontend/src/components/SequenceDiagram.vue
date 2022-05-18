@@ -155,6 +155,7 @@ export default {
     for (let i = 0; i < this.columnList.length; ++i) {
       this._generateColumnSegment(this.columnList[i])
     }
+    console.log('this.columnList', this.columnList)
   },
   mounted () {
     this.$nextTick(() => {
@@ -340,8 +341,13 @@ export default {
           top: top + 'px',
           left: left + 'px'
         })
+
         this.labelStyles.push({
-          left: -1 * left + 'px'
+          left: -1 * Math.abs(left) + 'px',
+          width: '70px',
+          'white-space': 'nowrap',
+          'overflow': 'hidden',
+          'text-overflow': 'ellipsis'
         })
       }
     }

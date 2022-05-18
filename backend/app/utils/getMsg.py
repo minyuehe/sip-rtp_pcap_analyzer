@@ -1,7 +1,5 @@
 import dpkt
 import socket
-# import copy
-# import re
 from app import app
 from app.utils.judgeRTP import *
 import datetime
@@ -63,7 +61,7 @@ def rdpcap(filePath):
 
         # Now grab the data within the Ethernet frame (the IP raw)
         udp = ip.data
-        if not len(udp.data):  # 如果应用层负载长度为0，即该包为单纯的tcp包，没有负载，则丢弃
+        if not len(udp.data):  # 如果应用层负载长度为0，即该包为单纯的udp包，没有负载，则丢弃
             continue
 
         try:

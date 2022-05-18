@@ -26,6 +26,14 @@
         >
           生成
         </el-button>
+        <el-button
+          type="primary"
+          @click="openDialog"
+          round
+          :disabled="isDialogOpen"
+        >
+          打开顺序图
+        </el-button>
       </div>
       <el-divider content-position="right">By minyue</el-divider>
       <el-dialog
@@ -34,17 +42,21 @@
         center
         :visible.sync="dialogTableVisible"
         :before-close="beforeCloseDialog"
+        :destroy-on-close="true"
+        :modal="false"
       >
-          <div class="dialog" id="pdfDom">
-            <sequence-diagram :data-list="dataList" @line-click="showItemMsg"/>
+          <div class="dialog" id="pdfDom" v-if="deleteDialog">
+            <sequence-diagram :data-list="dataList" @line-click="showItemMsg" />
           </div>
           <el-dialog
             width="30%"
             title="亲，关闭页面需要重新上传解析哦！ 您可选择下载PDF～"
             :visible.sync="innerVisible"
+            :before-close="beforeCloseInnerDialog"
+            :destroy-on-close="true"
             append-to-body>
             <el-button type="primary" @click="getPdf('文件名')">导出(pdf)</el-button>
-            <el-button type="warning" @click="innerVisible = false; dialogTableVisible = false">关闭</el-button>
+            <el-button type="warning" @click="closeInnerDialog">关闭</el-button>
           </el-dialog>
       </el-dialog>
       <div class="msg-table">
@@ -75,7 +87,9 @@ export default {
         isDash: 0
       }],
       dialogTableVisible: false,
-      innerVisible: false
+      innerVisible: false,
+      deleteDialog: true,
+      isDialogOpen: true
     }
   },
   components: {
@@ -90,7 +104,7 @@ export default {
           // debugger
           this.initData(res.data)
 
-          this.dialogTableVisible = true
+          this.isDialogOpen = false
         })
         .catch(res => {
           const { data: msg } = res.response
@@ -114,10 +128,11 @@ export default {
     },
     initData (data) {
       const arr = Object.values(data).reduce(
-        (pre, cur) => [...pre, doaa(JSON.parse(cur))],
+        (pre, cur) => [...pre, init(JSON.parse(cur))],
         []
       )
-      function doaa (bobj) {
+      console.log('arr', arr)
+      function init (bobj) {
         const {time, src, sport, dst, dport, content} = bobj
 
         return {
@@ -128,8 +143,10 @@ export default {
           isDash: 0
         }
       }
-      arr[arr.length - 1].isDash = 1
-      arr[arr.length - 2].isDash = 1
+      if (arr.length >= 2) {
+        arr[arr.length - 1].isDash = 1
+        arr[arr.length - 2].isDash = 1
+      }
       this.dataList = arr
       console.log(arr)
     },
@@ -139,6 +156,22 @@ export default {
     },
     beforeCloseDialog (done) {
       this.innerVisible = true
+      this.done = done
+    },
+    beforeCloseInnerDialog (done) {
+      this.deleteDialog = false
+    },
+    closeInnerDialog () {
+      this.innerVisible = false
+      this.dialogTableVisible = false
+      console.log('blask')
+      this.$router.replace({
+        path: '/black',
+        name: 'kongbaiye'
+      })
+    },
+    openDialog () {
+      this.dialogTableVisible = true
     }
   }
 }
@@ -159,7 +192,8 @@ div {
   margin: 20px;
 }
 .dialog {
-  width: 100%;
+  width: 80%;
   height: 90vh;
+  zoom: 0.7;
 }
 </style>

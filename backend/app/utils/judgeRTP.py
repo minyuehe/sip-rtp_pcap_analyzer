@@ -14,8 +14,8 @@ def judge(packet):
   # pt荷载 同一段通信相同123
   # ssrc源标识符一定
   # seq/ts
-  print(packet.version, packet.cc, packet.pt, packet.p, packet.ssrc, packet.ts, packet.seq)
-  print(packet.data,len(packet.data))
+  # print(packet.version, packet.cc, packet.pt, packet.p, packet.ssrc, packet.ts, packet.seq)
+  # print(packet.data,len(packet.data))
 
   if(packet.version == 2 and packet.p == 0 and (not judgeObj['isRTP'])):
     judgeObj['seq'] = packet.seq

@@ -1,5 +1,4 @@
 from flask import render_template, request, Response, jsonify
-from app import app
 from app.utils.getMsg import *
 from app.utils.uploadFile import *
 import json
@@ -23,11 +22,18 @@ def analysis():
     else:
     # 解析完成删除文件
         os.remove(res[1])
-        return res[0], 200
+        try:
+            if(len(res[0])<=2):
+                raise Exception("亲，该pcap文件无SIP/RTP通信数据")
+        except Exception as err:
+            return str(err), 500
+        else:
+            return res[0], 200
 
 # pcap上传接收接口
 @app.route('/pcap/upload', methods=["POST"])
 def upload():
+    print(request.remote_addr)
     requ_data = {
         'file': request.files.get('file')
     }
@@ -35,9 +41,3 @@ def upload():
 
     return jsonify(resp_data)
 
-# test
-@app.route('/print', methods=["POST"])
-def printI():
-    data = request.data.decode('utf-8')
-    value = json.loads(data)['data']
-    return value
