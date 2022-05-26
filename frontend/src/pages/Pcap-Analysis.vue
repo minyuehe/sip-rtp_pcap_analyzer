@@ -5,7 +5,7 @@
       <el-upload
         class="upload-button"
         ref="upload"
-        action="http://127.0.0.1:5000/pcap/upload"
+        action="http://localhost:5000/pcap/upload"
         :on-success="handleFiles"
         auto-upload
         :limit="1"
@@ -98,7 +98,7 @@ export default {
   methods: {
     onSubmit () {
       this.axios
-        .get('http://127.0.0.1:5000/pcap/analysis')
+        .get('http://localhost:5000/pcap/analysis')
         .then(res => {
           console.log('res', res.data)
           // debugger

@@ -344,7 +344,7 @@ export default {
 
         this.labelStyles.push({
           left: -1 * Math.abs(left) + 'px',
-          width: '70px',
+          // width: '90px',
           'white-space': 'nowrap',
           'overflow': 'hidden',
           'text-overflow': 'ellipsis'

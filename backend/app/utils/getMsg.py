@@ -16,7 +16,10 @@ class Message:
         self.time = time
         self.content = content
         self.type = type
-
+IPGroup = {
+    'fromIP': '0.0.0.0',
+    'toIP':'0.0.0.0'
+}
 
 def initData(ip, udp, raw, ts, type):
     dst = socket.inet_ntoa(ip.dst)
@@ -27,10 +30,15 @@ def initData(ip, udp, raw, ts, type):
 
     if(type == 'SIP'):
         if(hasattr(raw, 'method')):
+            IPGroup['fromIP'] = src
+            IPGroup['toIP'] = dst
             content = { 'method': raw.method, 'from': raw.headers['from'], 'to': raw.headers['to']}
         else:
             content = { 'reason': raw.reason, 'from': raw.headers['from'], 'to': raw.headers['to']}
     else:
+        if (IPGroup['fromIP'] != src or IPGroup['toIP'] != dst):
+            print(IPGroup['fromIP'], src)
+            raise dpkt.dpkt.NeedData
         content = 'RTP MEG'
 
     return Message(src, sport, dst, dport, time, content, type)
@@ -66,6 +74,7 @@ def rdpcap(filePath):
 
         try:
             req = dpkt.sip.Request(udp.data)
+
             dataList.append(initData(ip, udp, req, ts, 'SIP'))
         except (dpkt.dpkt.NeedData, dpkt.dpkt.UnpackError):
             try:
@@ -100,8 +109,10 @@ def getDataList():
     firstRTP = {}
     endRTP = {}
     for item in dataList:
+        print(item.type)
         isRTP = item.type == 'RTP'
-        if((not isRTP) and endRTP):
+        if(((not isRTP) and endRTP) or (item == dataList[len(dataList) - 1] and endRTP and isRTP)):
+            print('RTPRTPRTP')
             if (firstRTP.src == endRTP.src):
                 temp = endRTP.src
                 endRTP.src = endRTP.dst
@@ -109,14 +120,41 @@ def getDataList():
                 tempPort = endRTP.sport
                 endRTP.sport = endRTP.dport
                 endRTP.dport = tempPort
-
+            
+            table[firstRTP.time] = json.dumps(firstRTP.__dict__)
             table[endRTP.time] = json.dumps(endRTP.__dict__)
             endRTP = {}
             firstRTP = {}
+        # sip 或者 endRTP为{}
         if(not (isRTP and endRTP)):
-            if (item.type == 'RTP' and firstRTP == {}):
+            if ((item.type == 'RTP') and (firstRTP == {})):
                 firstRTP = item
-            table[item.time] = json.dumps(item.__dict__)
-        if(isRTP):
-            endRTP = item
+                print('firstPTP', firstRTP.sport, firstRTP.dport)
+                continue
+            if (not isRTP):
+                table[item.time] = json.dumps(item.__dict__)
+                endRTP = {}
+                firstRTP = {}
+        if(isRTP and firstRTP):
+            if (not endRTP):
+                endRTP = item
+            elif (item.sport == endRTP.sport and item.dport == endRTP.dport):
+                endRTP = item
+                print('endRTP', endRTP.sport, endRTP.dport)
+            elif (firstRTP.sport == endRTP.sport and firstRTP.dport == endRTP.dport):
+                print('RTPRTPTPTPTP', item.sport, endRTP.sport, item.dport, endRTP.dport)
+                if (firstRTP.src == endRTP.src):
+                    temp = endRTP.src
+                    endRTP.src = endRTP.dst
+                    endRTP.dst = temp
+                    tempPort = endRTP.sport
+                    endRTP.sport = endRTP.dport
+                    endRTP.dport = tempPort
+                table[firstRTP.time] = json.dumps(firstRTP.__dict__)
+                table[endRTP.time] = json.dumps(endRTP.__dict__)
+                endRTP = {}
+                firstRTP = {}
+            else:
+                endRTP = {}
+                firstRTP = {}
     return [table, filePath]
