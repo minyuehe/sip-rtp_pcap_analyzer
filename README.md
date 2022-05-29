@@ -32,4 +32,55 @@ A single page application with Flask and Vue.
 > Flask 是一个使用 Python 编写的轻量级 Web 应用框架。[Flask 学习资源](https://dormousehole.readthedocs.io/en/latest/)
 
 再来看一下目前代码的运行效果：
+
 ![image-20220418102030715](README/image-20220418102030715.png)
+
+### 本地部署
+
+#### 后台-开发环境
+
+1. 进入backend
+
+   ```
+   cd backend
+   ```
+
+2. 准备环境
+
+   ```
+   pip install requirements.txt
+   ```
+
+3. 运行Flask app
+
+   ```
+   flask run
+   ```
+
+   - 默认打开本地5000端口
+   - 也可以通过-h和-p自行设计ip和port
+
+#### 前端-开发环境
+
+1. 进入frontend
+
+   ```
+   cd frontend
+   ```
+
+2. 环境准备
+
+   首选需要安装nodeJS
+
+   ```
+   npm install
+   ```
+
+3. 执行开发环境运行
+
+   ```
+   npm run dev
+   ```
+
+   - 默认会在8080端口打开对应上面展示效果图的Web应用
+   - 也可以在config/index.js中修改对应HOST
